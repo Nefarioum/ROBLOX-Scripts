@@ -4,7 +4,7 @@ local ChatHandlerEvent = ReplicatedStorage:FindFirstChild("Announcer"):FindFirst
 
 local AnnouncementType = {}
 AnnouncementType.__index = AnnouncementType
-
+-- New instance function for style type
 AnnouncementType.new = function(style)
 	local self = setmetatable({
 		AnnounceStyle = style,
@@ -15,7 +15,7 @@ AnnouncementType.new = function(style)
 	
 	return self;
 end
-
+-- Handles which style should be used for main module
 function AnnouncementType:StyleHandler()
 	print(self.AnnounceStyle)
 	if self.AnnounceStyle == 'chat' then
@@ -26,7 +26,8 @@ function AnnouncementType:StyleHandler()
 		print('Style selected was chat')
 	end
 end
-
+-- Fires the chat message to all clients with the parameters needed
+-- TODO: Make them customizable with the module
 AnnouncementType.TriggerChatMessage = function(name, msg, date, global)
 	ChatHandlerEvent:FireAllClients({  
 		Text = ('['..name..'] '.. msg.. ' | Sent at '.. date);

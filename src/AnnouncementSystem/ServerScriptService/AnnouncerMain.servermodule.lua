@@ -8,7 +8,7 @@ local Announcer = {}
 Announcer.__index = Announcer
 
 local instances = {}
-
+-- Create a new announcer instance
 Announcer.new = function(userid, name, message, style, global)
 	local self = setmetatable({
 		UserId = userid,
@@ -20,15 +20,16 @@ Announcer.new = function(userid, name, message, style, global)
 	}, Announcer)
 	
 	instances[userid] = self;
+    -- Run the initialize function to start it
 	self:Init()
 	
 	return self;
 end
-
+-- Sends a message to console to inform you modle has ran
 function Announcer:Init()
 	warn("Announcement from "..self.Name.." has been initalised.")
 end
-
+-- Code to run a announcement
 function Announcer:TriggerAnnouncement()
 	local messageObject = Announcer.getTextObject(self.Message, self.UserId);
 	local filteredMessage = Announcer.getFilteredMessage(messageObject);
@@ -38,6 +39,7 @@ function Announcer:TriggerAnnouncement()
 	
 	if self.Global == true then 
 		if (not RunService:IsStudio()) then 
+            -- Utilizes message service to broadcast messages/announcements across servers
 			return MessagingService:PublishAsync("AnnouncerHandler", (self.UserId..'|'..self.Name.. '|'.. self.Message.. '|'.. self:GetDate()..'|'.. self.TimeSent)) 
 		else
 			print("Messaging Service Disabled due to Studio")
@@ -46,13 +48,13 @@ function Announcer:TriggerAnnouncement()
 	
 	return self.Style.TriggerFunction(self.Name, self.Message, self:GetDate()) 
 end
-
+-- Formats date function
 function Announcer:GetDate()
 	local days = {"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"}
 	
 	return string.format('%s - %d:%d', days[os.date("*t", self.TimeSent)["wday"]], string.format("%0.2i", os.date("*t", self.TimeSent)["hour"]), os.date("*t", self.TimeSent)["min"]);
 end
-
+-- Code to handle creating announcement instance when recieving a event from another server
 if (not RunService:IsStudio()) then 
 	MessagingService:SubscribeAsync("AnnouncerHandler", function(message)
 		local parameters = message.Data:split("|");
@@ -69,7 +71,7 @@ if (not RunService:IsStudio()) then
 	end)
 end
 
-
+-- Filters the text to comply with ROBLOX
 Announcer.getTextObject = function(message, fromPlayerId)
 	local textObject
 	local success, errorMessage = pcall(function()
@@ -82,7 +84,7 @@ Announcer.getTextObject = function(message, fromPlayerId)
 	end
 	return false
 end
-
+-- Filters the text to comply with ROBLOX
 Announcer.getFilteredMessage = function(textObject)
 	local filteredMessage
 	local success, errorMessage = pcall(function()
@@ -95,7 +97,7 @@ Announcer.getFilteredMessage = function(textObject)
 	end
 	return false
 end
-
+--Get metatable based on the ID passed through
 Announcer.GetMetatableFromUserId = function(userID)
 	return instances[userID]
 end
